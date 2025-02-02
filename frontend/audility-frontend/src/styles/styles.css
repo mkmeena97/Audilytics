@@ -556,3 +556,36 @@ body {
     color: #555;
   }
 
+  /* Edit Button */
+.editButton {
+    background-color: #abe235;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+    width: 60px;
+    margin-bottom: 20px;
+
+  }
+  
+  .editButton:hover {
+    background-color: #e0a800;
+  }
+  
+  /* Save Button */
+  .saveButton {
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+  
+  .saveButton:hover {
+    background-color: #218838;
+  }
+

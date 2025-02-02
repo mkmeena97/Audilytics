@@ -3,6 +3,11 @@ package com.example.audility.controllers;
 import com.example.audility.entities.User;
 import com.example.audility.services.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User Management", description = "APIs for managing users")
 public class UserController {
 
     private final UserService userService;
@@ -25,6 +31,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Register a new user", description = "Registers a new user with the provided details.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User registered successfully"),
+        @ApiResponse(responseCode = "409", description = "User already exists")
+    })
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
         if (userService.isUserExist(user.getUsername())) {

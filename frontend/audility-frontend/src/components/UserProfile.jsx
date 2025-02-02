@@ -203,7 +203,7 @@ const UserProfile = () => {
               Date of Birth:
               <input
                 type="date"
-                name="date_of_birth"
+                name="dob"
                 className="editForm input"
                 value={formData.dob}
                 onChange={handleChange}
