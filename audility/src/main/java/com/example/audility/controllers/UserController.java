@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -34,10 +35,14 @@ public class UserController {
         return ResponseEntity.ok(registeredUser);
     }
 
-	@PostMapping("/login")
-	public Map<String, String> login(@RequestBody User user) {
-		return userService.authenticateUser(user);
-	}
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User user) {
+        Map<String, Object> tokens = userService.authenticateUser(user);
+        if (tokens == null) {
+            return ResponseEntity.status(401).body("Invalid credentials");
+        }
+        return ResponseEntity.ok(tokens);
+    }
 
 
     @GetMapping("/admin")
@@ -46,9 +51,59 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/admin/validate/{userId}")
+    @PutMapping("/admin/validate/{userId}")
     public ResponseEntity<Void> validateUser(@PathVariable Long userId) {
         userService.validateUser(userId);
         return ResponseEntity.ok().build();
+    }
+    
+    
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
+        Optional<User> existingUser = userService.getUserById(userId);
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+
+            if (updatedUser.getFirstName() != null) user.setFirstName(updatedUser.getFirstName());
+            if (updatedUser.getLastName() != null) user.setLastName(updatedUser.getLastName());
+            if (updatedUser.getUsername() != null) user.setUsername(updatedUser.getUsername());
+            if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
+            if (updatedUser.getPhone() != null) user.setPhone(updatedUser.getPhone());
+            if (updatedUser.getCountry() != null) user.setCountry(updatedUser.getCountry());
+            if (updatedUser.getState() != null) user.setState(updatedUser.getState());
+            if (updatedUser.getCity() != null) user.setCity(updatedUser.getCity());
+            if (updatedUser.getStreet() != null) user.setStreet(updatedUser.getStreet());
+            if (updatedUser.getPostalCode() != null) user.setPostalCode(updatedUser.getPostalCode());
+            if (updatedUser.getDob() != null) user.setDob(updatedUser.getDob());
+
+            User savedUser = userService.updateUser(user);
+            return ResponseEntity.ok(savedUser);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/admin/update/{userId}")
+    public ResponseEntity<User> adminUpdateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
+        Optional<User> existingUser = userService.getUserById(userId);
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+
+            if (updatedUser.getUsername() != null) user.setUsername(updatedUser.getUsername());
+            if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
+            if (updatedUser.getRole() != null) user.setRole(updatedUser.getRole());
+
+            User savedUser = userService.updateUser(user);
+            return ResponseEntity.ok(savedUser);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/admin/delete/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        boolean deleted = userService.deleteUser(userId);
+        if (deleted) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
